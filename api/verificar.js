@@ -1,5 +1,5 @@
 import { initializeApp, getApps } from 'firebase/app';
-import { getFirestore, query, where, collection, getDocs } from 'firebase/firestore/lite';
+import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore/lite';
 
 const firebaseConfig = {
   apiKey: process.env.VITE_FIREBASE_API_KEY,
@@ -23,19 +23,20 @@ export default async function handler(req, res) {
   try {
     const ref = collection(db, 'clientes');
     const q = query(ref, where('codigo', '==', codigo));
-    const snapshot = await getDocs(q);
+    const snap = await getDocs(q);
 
-    if (snapshot.empty) {
+    if (snap.empty) {
       return res.status(404).json({ status: 'inexistente' });
     }
 
-    const cliente = snapshot.docs[0].data();
+    const cliente = snap.docs[0].data();
+
     return res.status(200).json({
       status: cliente.status,
-      validade: cliente.validade,
       nome: cliente.nome,
+      validade: cliente.validade,
     });
-  } catch (error) {
-    return res.status(500).json({ status: 'erro', mensagem: 'Erro interno no servidor' });
+  } catch (erro) {
+    return res.status(500).json({ status: 'erro', mensagem: 'Erro interno' });
   }
 }
