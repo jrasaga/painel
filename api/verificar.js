@@ -31,11 +31,8 @@ export default async function handler(req, res) {
 
     const cliente = snap.docs[0].data();
 
-    return res.status(200).json({
-      status: cliente.status,
-      nome: cliente.nome,
-      validade: cliente.validade,
-    });
+    return res.status(200).json(cliente);
+
   } catch (erro) {
     return res.status(500).json({ status: 'erro', mensagem: 'Erro interno' });
   }
