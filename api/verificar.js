@@ -14,19 +14,19 @@ if (getApps().length === 0) {
 const db = getFirestore();
 
 export default async function handler(req, res) {
-  const { id } = req.query;
+  const { codigo } = req.query;
 
-  if (!id) {
-    return res.status(400).json({ status: 'invalido', mensagem: 'ID inválido' });
+  if (!codigo || codigo.length !== 8) {
+    return res.status(400).json({ status: 'invalido', mensagem: 'Código inválido' });
   }
 
   try {
     const ref = collection(db, 'clientes');
-    const q = query(ref, where('id', '==', id));
+    const q = query(ref, where('codigo', '==', codigo));
     const snap = await getDocs(q);
 
     if (snap.empty) {
-      return res.status(404).json({ status: 'inexistente', mensagem: 'ID inexistente'});
+      return res.status(404).json({ status: 'inexistente', mensagem: 'Código inexistente'});
     }
 
     const cliente = snap.docs[0].data();
