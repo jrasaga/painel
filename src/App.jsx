@@ -38,6 +38,7 @@ export default function App() {
   const abrirNovo = async () => {
     const codigoGerado = await gerarCodigoUnico(db);
     setClienteSelecionado({
+      id: '',  // Adicionado campo ID
       codigo: codigoGerado,
       mac: '',
       nome: '',
@@ -49,11 +50,24 @@ export default function App() {
     setModalEditar(true);
   };
 
-
-
   const salvarCliente = async (cliente) => {
     const ref = doc(db, 'clientes', cliente.codigo);
-    await setDoc(ref, cliente);
+
+    // Verifique se já existe um cliente com o mesmo ID
+    const clientesRef = collection(db, 'clientes');
+    const q = query(clientesRef, where("id", "==", cliente.id));
+    const querySnapshot = await getDocs(q);
+
+    if (!cliente.id) {
+      alert("O ID do cliente não pode estar vazio.");
+      return;
+    }
+
+    if (querySnapshot.empty) {
+      await setDoc(ref, cliente);
+    } else {
+      alert("Já existe um cliente com este ID.");
+    }
   };
 
   const editarCliente = (cliente) => {
