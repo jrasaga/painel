@@ -17,7 +17,7 @@ export default async function handler(req, res) {
   const { codigo } = req.query;
 
   if (!codigo || codigo.length !== 8) {
-    return res.status(400).json({ status: 'erro', mensagem: 'Código inválido' });
+    return res.status(400).json({ status: 'invalido', mensagem: 'Código inválido' });
   }
 
   try {
