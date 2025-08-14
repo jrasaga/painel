@@ -11,7 +11,8 @@ export default function ClientTable({ clients, onEdit, onDelete, onToggleStatus 
       <table className="min-w-full border-separate border-spacing-y-2">
         <thead className="bg-zinc-100 text-left text-zinc-600 font-semibold">
           <tr>
-            <th className="px-4 py-2">Código</th>
+            <th className="px-4 py-2">ID</th> {/* Nova coluna para ID */}
+            <th>Código</th>
             <th>MAC</th>
             <th>Nome</th>
             <th>Usuário</th>
@@ -24,7 +25,8 @@ export default function ClientTable({ clients, onEdit, onDelete, onToggleStatus 
         <tbody>
           {clients.map((c) => (
             <tr key={c.codigo} className="bg-zinc-50 hover:bg-zinc-100">
-              <td className="px-4 py-2">{c.codigo}</td>
+              <td className="px-4 py-2">{c.id}</td> {/* Exibir ID aqui */}
+              <td>{c.codigo}</td>
               <td>{c.mac}</td>
               <td>{c.nome}</td>
               <td>{c.usuario}</td>
@@ -41,13 +43,19 @@ export default function ClientTable({ clients, onEdit, onDelete, onToggleStatus 
               <td>{c.contato}</td>
               <td className="text-center">
                 <div className="flex justify-center items-center gap-2">
-                  <button onClick={() => onEdit(c)}><PencilIcon className="h-4 w-4 text-blue-500" /></button>
-                  <button onClick={() => onToggleStatus(c)}>{
-                    c.status === 'ativo'
-                      ? <LockClosedIcon className="h-4 w-4 text-yellow-500" />
-                      : <LockOpenIcon className="h-4 w-4 text-green-500" />
-                  }</button>
-                  <button onClick={() => onDelete(c)}><TrashIcon className="h-4 w-4 text-red-500" /></button>
+                  <button onClick={() => onEdit(c)}>
+                    <PencilIcon className="h-4 w-4 text-blue-500" />
+                  </button>
+                  <button onClick={() => onToggleStatus(c)}>
+                    {
+                      c.status === 'ativo'
+                        ? <LockClosedIcon className="h-4 w-4 text-yellow-500" />
+                        : <LockOpenIcon className="h-4 w-4 text-green-500" />
+                    }
+                  </button>
+                  <button onClick={() => onDelete(c)}>
+                    <TrashIcon className="h-4 w-4 text-red-500" />
+                  </button>
                 </div>
               </td>
             </tr>
