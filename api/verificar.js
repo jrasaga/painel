@@ -26,7 +26,7 @@ export default async function handler(req, res) {
     const snap = await getDocs(q);
 
     if (snap.empty) {
-      return res.status(404).json({ status: 'inexistente' });
+      return res.status(404).json({ status: 'inexistente', mensagem: 'Código inexistente'});
     }
 
     const cliente = snap.docs[0].data();
