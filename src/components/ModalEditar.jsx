@@ -3,7 +3,7 @@ import ModalBase from './ModalBase';
 
 export default function ModalEditar({ show, onClose, onSave, cliente }) {
   const [formData, setFormData] = useState({
-    id: '',           // Campo de ID adicionado
+    id: '',
     mac: '',
     nome: '',
     usuario: '',
@@ -12,15 +12,41 @@ export default function ModalEditar({ show, onClose, onSave, cliente }) {
     contato: '',
   });
 
+  // Função para converter data de dd/mm/yyyy para yyyy-mm-dd (formato ISO)
+  const dateToISO = (dateStr) => {
+    if (!dateStr) return '';
+    const [day, month, year] = dateStr.split('/');
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  };
+
+  // Função para converter data de yyyy-mm-dd para dd/mm/yyyy
+  const dateFromISO = (isoDate) => {
+    if (!isoDate) return '';
+    const [year, month, day] = isoDate.split('-');
+    return `${day}/${month}/${year}`;
+  };
+
   useEffect(() => {
     if (cliente) {
-      setFormData(cliente);
+      setFormData({
+        ...cliente,
+        // Se a validade vier no formato dd/mm/yyyy, mantém assim
+        // Se vier em outro formato, você pode ajustar conforme necessário
+        validade: cliente.validade || ''
+      });
     }
   }, [cliente]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    
+    if (name === 'validade') {
+      // O input date retorna no formato yyyy-mm-dd, convertemos para dd/mm/yyyy
+      const formattedDate = dateFromISO(value);
+      setFormData((prev) => ({ ...prev, [name]: formattedDate }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = () => {
@@ -62,9 +88,9 @@ export default function ModalEditar({ show, onClose, onSave, cliente }) {
         />
         <input 
           name="validade" 
-          value={formData.validade} 
+          value={dateToISO(formData.validade)} // Converte para ISO para o input
           onChange={handleChange} 
-          placeholder="Validade" 
+          placeholder="dd/mm/yyyy" 
           type="date" 
           className="bg-zinc-700 px-3 py-2 rounded" 
         />
