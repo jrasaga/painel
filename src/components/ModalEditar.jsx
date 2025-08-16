@@ -15,6 +15,11 @@ export default function ModalEditar({ show, onClose, onSave, cliente }) {
   // Função para converter data de dd/mm/yyyy para yyyy-mm-dd (formato ISO)
   const dateToISO = (dateStr) => {
     if (!dateStr) return '';
+    // Se já está no formato ISO (yyyy-mm-dd), retorna como está
+    if (dateStr.includes('-') && dateStr.length === 10) {
+      return dateStr;
+    }
+    // Se está no formato dd/mm/yyyy, converte
     const [day, month, year] = dateStr.split('/');
     return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
   };
@@ -22,6 +27,11 @@ export default function ModalEditar({ show, onClose, onSave, cliente }) {
   // Função para converter data de yyyy-mm-dd para dd/mm/yyyy
   const dateFromISO = (isoDate) => {
     if (!isoDate) return '';
+    // Se já está no formato dd/mm/yyyy, retorna como está
+    if (isoDate.includes('/')) {
+      return isoDate;
+    }
+    // Se está no formato ISO, converte
     const [year, month, day] = isoDate.split('-');
     return `${day}/${month}/${year}`;
   };
@@ -30,9 +40,8 @@ export default function ModalEditar({ show, onClose, onSave, cliente }) {
     if (cliente) {
       setFormData({
         ...cliente,
-        // Se a validade vier no formato dd/mm/yyyy, mantém assim
-        // Se vier em outro formato, você pode ajustar conforme necessário
-        validade: cliente.validade || ''
+        // Converte a data para o formato dd/mm/yyyy se necessário
+        validade: dateFromISO(cliente.validade || '')
       });
     }
   }, [cliente]);
@@ -41,7 +50,7 @@ export default function ModalEditar({ show, onClose, onSave, cliente }) {
     const { name, value } = e.target;
     
     if (name === 'validade') {
-      // O input date retorna no formato yyyy-mm-dd, convertemos para dd/mm/yyyy
+      // O input date sempre retorna no formato yyyy-mm-dd, convertemos para dd/mm/yyyy
       const formattedDate = dateFromISO(value);
       setFormData((prev) => ({ ...prev, [name]: formattedDate }));
     } else {
@@ -50,6 +59,10 @@ export default function ModalEditar({ show, onClose, onSave, cliente }) {
   };
 
   const handleSubmit = () => {
+    // Debug: vamos ver o que está sendo salvo
+    console.log('Data sendo salva:', formData);
+    console.log('Validade no formato:', formData.validade);
+    
     onSave(formData);
     onClose();
   };
@@ -128,4 +141,4 @@ export default function ModalEditar({ show, onClose, onSave, cliente }) {
       </div>
     </ModalBase>
   );
-}
+    }
