@@ -29,7 +29,10 @@ export default function App() {
   useEffect(() => {
     const ref = collection(db, 'clientes');
     const unsubscribe = onSnapshot(ref, (snapshot) => {
-      const dados = snapshot.docs.map((doc) => doc.data());
+      const dados = snapshot.docs.map((doc) => ({
+        ...doc.data(),
+        codigo: doc.id, // Inclui o ID do documento como 'codigo'
+      }));
       setClientes(dados);
     });
     return () => unsubscribe();
@@ -38,7 +41,7 @@ export default function App() {
   const abrirNovo = async () => {
     const codigoGerado = await gerarCodigoUnico(db);
     setClienteSelecionado({
-      id: '',  // Adicionado campo ID
+      id: '', // Adicionado campo ID
       codigo: codigoGerado,
       mac: '',
       nome: '',
@@ -53,7 +56,13 @@ export default function App() {
   const salvarCliente = async (cliente) => {
     const ref = doc(db, 'clientes', cliente.codigo);
 
-    // Verifique se já existe um cliente com o mesmo ID
+    // Se o cliente já tem um ID e código, é uma edição
+    if (cliente.id && cliente.codigo) {
+      await setDoc(ref, cliente, { merge: true });
+      return;
+    }
+
+    // Para novos clientes, verifique duplicidade do ID
     const clientesRef = collection(db, 'clientes');
     const q = query(clientesRef, where("id", "==", cliente.id));
     const querySnapshot = await getDocs(q);
